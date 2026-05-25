@@ -789,7 +789,7 @@ Requer Python 3.12+, Node.js 20+ e PostgreSQL rodando.
 
 ```bash
 # Clone o repositório
-git clone https://github.com/FelipeRochaMartins/CraftAI.git
+git clone https://github.com/Eduardafpires25/CraftAI
 cd CraftAI
 
 # Instale o uv (gerenciador de dependências)
