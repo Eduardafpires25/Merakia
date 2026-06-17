@@ -1,6 +1,6 @@
-# CraftAI
+# MeraKia
 
-CraftAI é uma plataforma de marketplace para produtos personalizados e regulares, com integração de IA para geração de imagens e sugestões de produtos. A plataforma permite que vendedores criem suas lojas, cadastrem produtos e recebam pedidos personalizados ou regulares de clientes.
+MeraKia é uma plataforma de marketplace para produtos personalizados e regulares, com integração de IA para geração de imagens e sugestões de produtos. A plataforma permite que vendedores criem suas lojas, cadastrem produtos e recebam pedidos personalizados ou regulares de clientes.
 
 ---
 
@@ -25,7 +25,7 @@ CraftAI é uma plataforma de marketplace para produtos personalizados e regulare
 
 ## 🎯 Visão Geral
 
-CraftAI é uma plataforma completa de e-commerce focada em produtos personalizados, com as seguintes características principais:
+MeraKia é uma plataforma completa de e-commerce focada em produtos personalizados, com as seguintes características principais:
 
 - **Marketplace de produtos personalizados**: Clientes podem solicitar produtos personalizados com iterações de IA
 - **Produtos regulares**: Vendedores podem oferecer produtos regulares com compra direta
@@ -121,7 +121,7 @@ CraftAI é uma plataforma completa de e-commerce focada em produtos personalizad
 ## 📁 Estrutura do Projeto
 
 ```
-CraftAI/
+MeraKia/
 ├── alembic/                          # Migrations do banco de dados
 │   ├── versions/                     # Arquivos de migração
 │   └── env.py                        # Configuração do Alembic
@@ -249,8 +249,8 @@ CraftAI/
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/CraftAI.git
-cd CraftAI
+git clone https://github.com/seu-usuario/MeraKia.git
+cd MeraKia
 
 # Crie um ambiente virtual
 python -m venv .venv
@@ -281,7 +281,7 @@ Crie um arquivo `.env` na raiz do projeto baseado em `.env.example`:
 
 ```env
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/craftai
+DATABASE_URL=postgresql://user:password@localhost:5432/merakia
 
 # JWT
 SECRET_KEY=your-secret-key-here
@@ -293,8 +293,8 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
-EMAIL_FROM=noreply@craftai.com
-EMAIL_FROM_NAME=CraftAI
+EMAIL_FROM=noreply@merakia.com
+EMAIL_FROM_NAME=MeraKia
 
 # OpenAI
 OPENAI_API_KEY=your-openai-api-key
@@ -485,7 +485,7 @@ O relatório HTML será gerado em `htmlcov/index.html`
 
 ```bash
 # Instale o Heroku CLI
-heroku create craftai-api
+heroku create merakia-api
 
 # Defina as variáveis de ambiente
 heroku config:set DATABASE_URL=your-database-url
@@ -540,9 +540,9 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 
 Para dúvidas ou sugestões, entre em contato através das issues do GitHub.
 
-# CraftAI
+# MeraKia
 
-CraftAI é uma plataforma de marketplace para produtos personalizados com integração de geração de imagens via IA. Vendedores criam lojas e cadastram produtos; clientes fazem pedidos personalizados e refinam o design em iterações com IA até aprovar a versão final.
+MeraKia é uma plataforma de marketplace para produtos personalizados com integração de geração de imagens via IA. Vendedores criam lojas e cadastram produtos; clientes fazem pedidos personalizados e refinam o design em iterações com IA até aprovar a versão final.
 
 ---
 
@@ -565,7 +565,7 @@ CraftAI é uma plataforma de marketplace para produtos personalizados com integr
 
 ## 🎯 Visão Geral
 
-CraftAI conecta clientes que desejam produtos personalizados com vendedores especializados. O diferencial é o fluxo de **iterações com IA**: após criar um pedido, o cliente descreve sua ideia e a IA (OpenAI gpt-image-2) gera uma imagem do produto. O cliente pode refinar a descrição e gerar novas versões até aprovar o design final.
+MeraKia conecta clientes que desejam produtos personalizados com vendedores especializados. O diferencial é o fluxo de **iterações com IA**: após criar um pedido, o cliente descreve sua ideia e a IA (OpenAI gpt-image-2) gera uma imagem do produto. O cliente pode refinar a descrição e gerar novas versões até aprovar o design final.
 
 **Fluxo principal:**
 1. Vendedor cria loja e cadastra produtos personalizáveis
@@ -657,7 +657,7 @@ CraftAI conecta clientes que desejam produtos personalizados com vendedores espe
 ## 📁 Estrutura do Projeto
 
 ```
-CraftAI/
+MeraKia/
 ├── alembic/                         # Migrations do banco de dados
 │   └── versions/                    # Arquivos de migração gerados
 ├── config/
@@ -753,9 +753,9 @@ Isso sobe três serviços:
 
 | Serviço | Porta | Descrição |
 |---------|-------|-----------|
-| `craftai-api` | `8000` | Backend FastAPI |
-| `craftai-web` | `5173` | Frontend React (Vite dev) |
-| `craftai-database` | `5432` | PostgreSQL 16 |
+| `merakia-api` | `8000` | Backend FastAPI |
+| `merakia-web` | `5173` | Frontend React (Vite dev) |
+| `merakia-database` | `5432` | PostgreSQL 16 |
 
 As migrations são executadas automaticamente no startup da API.
 
@@ -789,8 +789,8 @@ Requer Python 3.12+, Node.js 20+ e PostgreSQL rodando.
 
 ```bash
 # Clone o repositório
-git clone https://github.com/FelipeRochaMartins/CraftAI.git
-cd CraftAI
+git clone https://github.com/Eduardafpires25/MeraKia
+cd MeraKia
 
 # Instale o uv (gerenciador de dependências)
 pip install uv

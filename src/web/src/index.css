@@ -7,15 +7,15 @@
     color-scheme: light;
     --scrollbar-track: #f1f5f9;
     --scrollbar-thumb: #94a3b8;
-    --scrollbar-thumb-hover: #7c5cfa;
+    --scrollbar-thumb-hover: #165c7d;
     --scrollbar-border: #f1f5f9;
   }
   .dark {
     color-scheme: dark;
-    --scrollbar-track: #15102b;
-    --scrollbar-thumb: #252046;
-    --scrollbar-thumb-hover: #6b3fef;
-    --scrollbar-border: #15102b;
+    --scrollbar-track: #0a1c26;
+    --scrollbar-thumb: #16374a;
+    --scrollbar-thumb-hover: #165c7d;
+    --scrollbar-border: #0a1c26;
   }
 
   html, body, #root {
@@ -30,8 +30,8 @@
   .dark body {
     @apply bg-ink-900 text-slate-100;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124, 92, 250, 0.25), transparent 70%),
-      radial-gradient(circle at 90% 20%, rgba(124, 92, 250, 0.12), transparent 50%);
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(22, 92, 125, 0.25), transparent 70%),
+      radial-gradient(circle at 90% 20%, rgba(22, 92, 125, 0.12), transparent 50%);
     background-attachment: fixed;
   }
 }

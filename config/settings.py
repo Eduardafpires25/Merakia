@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Any
 class Settings(BaseSettings):
 
     # Project Configuration
-    PROJECT_NAME: str = "CraftAI"
+    PROJECT_NAME: str = "MeraKia"
     LOG_LEVEL: str
     
     # Directories
@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_TLS: bool = True
     EMAIL_FROM: str = ""
-    EMAIL_FROM_NAME: str = "CraftAI"
+    EMAIL_FROM_NAME: str = "MeraKia"
 
     # Storage Configuration (local | s3)
     STORAGE_BACKEND: str = "local"

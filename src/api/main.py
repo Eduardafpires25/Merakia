@@ -28,18 +28,18 @@ from src.api.routes.cart import router as cart_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Iniciando API CraftAI (DEV_MODE=%s)...", settings.DEV_MODE)
+    logger.info("Iniciando API MeraKia (DEV_MODE=%s)...", settings.DEV_MODE)
     try:
         run_migrations()
     except Exception as e:
         logger.error("Falha ao executar migrations: %s", e)
     yield
-    logger.info("Encerrando API CraftAI...")
+    logger.info("Encerrando API MeraKia...")
 
 
 app = FastAPI(
-    title="CraftAI API",
-    description="API do CraftAI",
+    title="MeraKia API",
+    description="API do MeraKia",
     version="0.1.0",
     lifespan=lifespan,
 )
@@ -106,7 +106,7 @@ if settings.STORAGE_BACKEND.lower() == "local":
 @app.get("/")
 def root():
     return {
-        "message": "CraftAI API",
+        "message": "MeraKia API",
         "version": "0.1.0",
         "docs": "/docs",
     }

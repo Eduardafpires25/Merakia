@@ -10,7 +10,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "craftai-theme";
+const STORAGE_KEY = "merakia-theme";
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "dark";

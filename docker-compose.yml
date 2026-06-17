@@ -1,7 +1,7 @@
 services:
   database:
     image: postgres:16-alpine
-    container_name: craftai-database
+    container_name: merakia-database
     restart: unless-stopped
     env_file:
       - .env
@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: src/api/Dockerfile.api
-    container_name: craftai-api
+    container_name: merakia-api
     restart: unless-stopped
     env_file:
       - .env
@@ -46,7 +46,7 @@ services:
     build:
       context: ./src/web
       dockerfile: Dockerfile.web
-    container_name: craftai-web
+    container_name: merakia-web
     restart: unless-stopped
     environment:
       TZ: America/Sao_Paulo

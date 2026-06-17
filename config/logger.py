@@ -31,7 +31,7 @@ def setup_logger():
     if not os.path.exists(settings.LOG_DIR):
         os.makedirs(settings.LOG_DIR)
 
-    logger_name = getattr(settings, "PROJECT_NAME", "CraftAI")
+    logger_name = getattr(settings, "PROJECT_NAME", "MeraKia")
     logger = logging.getLogger(logger_name)
     
     logger.setLevel(logging.DEBUG)

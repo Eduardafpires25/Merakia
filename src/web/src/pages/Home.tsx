@@ -1,4 +1,5 @@
-import { ArrowRight, Loader2, Package, Sparkles, Store } from "lucide-react";
+import { ArrowRight, Loader2, Package, Store } from "lucide-react";
+import { LogoIcon } from "../components/LogoIcon";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FeatureBar } from "../components/FeatureBar";
@@ -28,10 +29,10 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-ink-900 relative overflow-hidden">
       {/* Fumaça nos cantos */}
-      <div className="fixed top-0 left-0 w-96 h-96 bg-gradient-to-br from-brand-500/20 via-purple-500/10 to-pink-500/20 dark:from-brand-500/10 dark:via-purple-500/5 dark:to-pink-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDuration: '6s' }} />
-      <div className="fixed top-0 right-0 w-80 h-80 bg-gradient-to-bl from-purple-500/20 via-pink-500/10 to-brand-500/20 dark:from-purple-500/10 dark:via-pink-500/5 dark:to-brand-500/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDuration: '7s', animationDelay: '1s' }} />
-      <div className="fixed bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-pink-500/20 via-brand-500/10 to-purple-500/20 dark:from-pink-500/10 dark:via-brand-500/5 dark:to-purple-500/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }} />
-      <div className="fixed bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-brand-500/20 via-purple-500/10 to-pink-500/20 dark:from-brand-500/10 dark:via-purple-500/5 dark:to-pink-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDuration: '5s', animationDelay: '0.5s' }} />
+      <div className="fixed top-0 left-0 w-96 h-96 bg-gradient-to-br from-brand-500/8 via-accent-500/5 to-brand-300/8 dark:from-brand-500/10 dark:via-accent-500/5 dark:to-brand-300/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDuration: '6s' }} />
+      <div className="fixed top-0 right-0 w-80 h-80 bg-gradient-to-bl from-accent-500/8 via-brand-500/5 to-brand-500/8 dark:from-accent-500/10 dark:via-brand-500/5 dark:to-brand-500/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 animate-pulse" style={{ animationDuration: '7s', animationDelay: '1s' }} />
+      <div className="fixed bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-accent-500/8 via-brand-500/5 to-brand-300/8 dark:from-accent-500/10 dark:via-brand-500/5 dark:to-brand-300/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }} />
+      <div className="fixed bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-brand-500/8 via-accent-500/5 to-brand-300/8 dark:from-brand-500/10 dark:via-accent-500/5 dark:to-brand-300/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDuration: '5s', animationDelay: '0.5s' }} />
 
       <main className="max-w-7xl mx-auto px-6 py-12 relative z-10">
         {/* Hero Section */}
@@ -44,7 +45,7 @@ export function HomePage() {
               Crie artes únicas, do seu jeito. Escolha uma loja e personalize como quiser.
             </p>
             <Link to="/sellers" className="btn-primary mt-8">
-              <Sparkles className="w-4 h-4" />
+              <LogoIcon className="w-4 h-4" />
               Explorar lojas
               <ArrowRight className="w-4 h-4" />
             </Link>
@@ -56,17 +57,17 @@ export function HomePage() {
             {/* Fumaça animada */}
             <div className="absolute inset-0 -z-10">
               {/* Camadas principais */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-brand-500/50 via-purple-500/40 to-pink-500/50 dark:from-brand-500/30 dark:via-purple-500/20 dark:to-pink-500/30 rounded-full blur-3xl animate-pulse" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-tr from-purple-500/60 via-pink-500/40 to-brand-500/50 dark:from-purple-500/40 dark:via-pink-500/20 dark:to-brand-500/30 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '3s' }} />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-bl from-pink-500/50 via-brand-500/40 to-purple-500/50 dark:from-pink-500/30 dark:via-brand-500/20 dark:to-purple-500/30 rounded-full blur-xl animate-pulse" style={{ animationDuration: '5s' }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-brand-500/20 via-accent-500/15 to-brand-300/20 dark:from-brand-500/30 dark:via-accent-500/20 dark:to-brand-300/30 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-tr from-accent-500/25 via-brand-500/15 to-brand-500/20 dark:from-accent-500/40 dark:via-brand-500/20 dark:to-brand-500/30 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '3s' }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-bl from-accent-500/20 via-brand-500/15 to-brand-300/20 dark:from-accent-500/30 dark:via-brand-500/20 dark:to-brand-300/30 rounded-full blur-xl animate-pulse" style={{ animationDuration: '5s' }} />
               {/* Camadas externas */}
-              <div className="absolute top-1/3 left-1/3 w-40 h-40 bg-gradient-to-r from-brand-500/40 via-purple-500/30 to-pink-500/40 dark:from-brand-500/20 dark:via-purple-500/15 dark:to-pink-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
-              <div className="absolute bottom-1/3 right-1/3 w-36 h-36 bg-gradient-to-l from-pink-500/40 via-brand-500/30 to-purple-500/40 dark:from-pink-500/20 dark:via-brand-500/15 dark:to-purple-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '0.5s' }} />
-              <div className="absolute top-1/4 right-1/4 w-24 h-24 bg-gradient-to-bl from-purple-500/30 via-pink-500/20 to-brand-500/30 dark:from-purple-500/15 dark:via-pink-500/10 dark:to-brand-500/15 rounded-full blur-xl animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '1.5s' }} />
+              <div className="absolute top-1/3 left-1/3 w-40 h-40 bg-gradient-to-r from-brand-500/15 via-accent-500/10 to-brand-300/15 dark:from-brand-500/20 dark:via-accent-500/15 dark:to-brand-300/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+              <div className="absolute bottom-1/3 right-1/3 w-36 h-36 bg-gradient-to-l from-accent-500/15 via-brand-500/10 to-brand-300/15 dark:from-accent-500/20 dark:via-brand-500/15 dark:to-brand-300/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '0.5s' }} />
+              <div className="absolute top-1/4 right-1/4 w-24 h-24 bg-gradient-to-bl from-accent-500/12 via-brand-500/8 to-brand-500/12 dark:from-accent-500/15 dark:via-brand-500/10 dark:to-brand-500/15 rounded-full blur-xl animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '1.5s' }} />
             </div>
-            <Sparkles className="w-16 h-16 text-brand-500 drop-shadow-2xl animate-pulse" fill="currentColor" />
-            <div className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-brand-500 to-purple-600 dark:from-white dark:via-brand-400 dark:to-purple-400 bg-clip-text text-transparent">
-              CRAFT<span className="text-brand-500 dark:text-brand-400">AI</span>
+            <LogoIcon className="w-16 h-16" />
+            <div className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-brand-500 to-accent-500 dark:from-white dark:via-brand-400 dark:to-accent-400 bg-clip-text text-transparent">
+              MeraK<span className="text-accent-500 dark:text-accent-400">ia</span>
             </div>
           </div>
         </div>

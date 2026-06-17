@@ -1,4 +1,4 @@
-"""Cliente de IA do CraftAI.
+"""Cliente de IA do MeraKia.
 
 Encapsula chamadas ao provider (OpenAI por padrão) para:
 - gerar imagens conceituais a partir de descrições textuais (RF05/RF06)

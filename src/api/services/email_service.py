@@ -81,12 +81,12 @@ class EmailService:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificação de Email - CraftAI</title>
+    <title>Verificação de Email - MeraKia</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #165c7d 0%, #7d3716 100%);
             padding: 40px 20px;
             min-height: 100vh;
         }}
@@ -99,7 +99,7 @@ class EmailService:
             overflow: hidden;
         }}
         .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #165c7d 0%, #7d3716 100%);
             padding: 40px 30px;
             text-align: center;
         }}
@@ -128,7 +128,7 @@ class EmailService:
             margin-bottom: 30px;
         }}
         .code-box {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #165c7d 0%, #7d3716 100%);
             border-radius: 12px;
             padding: 30px;
             text-align: center;
@@ -189,7 +189,7 @@ class EmailService:
             margin-bottom: 5px;
         }}
         .footer .brand {{
-            color: #667eea;
+            color: #165c7d;
             font-weight: 600;
         }}
         @media (max-width: 480px) {{
@@ -202,13 +202,13 @@ class EmailService:
 <body>
     <div class="container">
         <div class="header">
-            <h1>CraftAI</h1>
+            <h1>MeraKia</h1>
             <p>Verificação de Email</p>
         </div>
         <div class="content">
             <p class="greeting">Olá, <strong>{name}</strong>!</p>
             <p class="message">
-                Bem-vindo(a) à CraftAI! Para ativar sua conta e começar a usar nossa plataforma,
+                Bem-vindo(a) à MeraKia! Para ativar sua conta e começar a usar nossa plataforma,
                 precisamos verificar seu endereço de email. Use o código abaixo:
             </p>
             <div class="code-box">
@@ -218,7 +218,7 @@ class EmailService:
             <div class="instructions">
                 <h3>Como verificar seu email:</h3>
                 <ol>
-                    <li>Faça login na plataforma CraftAI</li>
+                    <li>Faça login na plataforma MeraKia</li>
                     <li>Acesse a seção "Verificar Email" nas configurações</li>
                     <li>Digite o código acima</li>
                     <li>Pronto! Sua conta será ativada</li>
@@ -229,8 +229,8 @@ class EmailService:
             </div>
         </div>
         <div class="footer">
-            <p>Se você não criou uma conta na CraftAI, ignore este email.</p>
-            <p class="brand">CraftAI - Inteligência Artificial para Artesanato</p>
+            <p>Se você não criou uma conta na MeraKia, ignore este email.</p>
+            <p class="brand">MeraKia - Inteligência Artificial para Artesanato</p>
         </div>
     </div>
 </body>
@@ -243,20 +243,20 @@ class EmailService:
         Retorna: (sucesso, codigo)
         """
         code = self._generate_code(6)
-        subject = "Verifique seu email - CraftAI"
+        subject = "Verifique seu email - MeraKia"
         html_content = self._get_verification_email_template(name, code)
         text_content = f"""
 Olá, {name}!
 
-Bem-vindo(a) à CraftAI! Para ativar sua conta, use o código de verificação:
+Bem-vindo(a) à MeraKia! Para ativar sua conta, use o código de verificação:
 
 CÓDIGO: {code}
 
 Este código expira em 30 minutos.
 
-Se você não criou uma conta na CraftAI, ignore este email.
+Se você não criou uma conta na MeraKia, ignore este email.
 
-CraftAI - Inteligência Artificial para Artesanato
+MeraKia - Inteligência Artificial para Artesanato
 """
 
         success = self._send_email(to_email, subject, html_content, text_content)
@@ -274,20 +274,20 @@ CraftAI - Inteligência Artificial para Artesanato
         Retorna o código gerado imediatamente.
         """
         code = self._generate_code(6)
-        subject = "Verifique seu email - CraftAI"
+        subject = "Verifique seu email - MeraKia"
         html_content = self._get_verification_email_template(name, code)
         text_content = f"""
 Olá, {name}!
 
-Bem-vindo(a) à CraftAI! Para ativar sua conta, use o código de verificação:
+Bem-vindo(a) à MeraKia! Para ativar sua conta, use o código de verificação:
 
 CÓDIGO: {code}
 
 Este código expira em 30 minutos.
 
-Se você não criou uma conta na CraftAI, ignore este email.
+Se você não criou uma conta na MeraKia, ignore este email.
 
-CraftAI - Inteligência Artificial para Artesanato
+MeraKia - Inteligência Artificial para Artesanato
 """
 
         def _send_and_callback():

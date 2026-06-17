@@ -1,5 +1,5 @@
 """
-Script de testes E2E para a API CraftAI.
+Script de testes E2E para a API MeraKia.
 
 Uso:
     python scripts/test_api.py
@@ -1525,12 +1525,12 @@ def test_logout_flow(t: TestRunner, tokens: Dict[str, Dict[str, str]]):
 # ============================================================
 
 def main():
-    parser = argparse.ArgumentParser(description="Testes E2E da API CraftAI")
+    parser = argparse.ArgumentParser(description="Testes E2E da API MeraKia")
     parser.add_argument("--base-url", default="http://localhost:8000", help="URL base da API")
     args = parser.parse_args()
 
     print(f"{C.BOLD}{C.INFO}")
-    print("CraftAI API - Test Suite")
+    print("MeraKia API - Test Suite")
     print(f"Base URL: {args.base_url}{C.END}")
 
     # Verificar se a API esta no ar

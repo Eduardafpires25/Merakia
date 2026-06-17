@@ -1,4 +1,4 @@
-"""ORM models for CraftAI.
+"""ORM models for MeraKia.
 
 Importing this package registers all models on the shared `Base.metadata`,
 which is required for Alembic autogenerate to detect them.
