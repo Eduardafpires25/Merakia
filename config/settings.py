@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str
     
     # Directories
-    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(_file_)))
     LOG_DIR: str = os.path.join(BASE_DIR, "logs", "api")
     CACHE_DIR: str = os.path.join(BASE_DIR, "cache")
     IMAGES_DIR: str = os.path.join(CACHE_DIR, "images")
@@ -23,9 +23,18 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int = 5432
 
+    DATABASE_URL: Optional[str] = None
+
     @property
     def POSTGRES_URL(self):
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        if self.DATABASE_URL:
+            url = self.DATABASE_URL
+            if url.startswith("postgresql://"):
+                return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+            elif url.startswith("postgres://"):
+                return url.replace("postgres://", "postgresql+psycopg2://", 1)
+            return url
+        return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
     # JWT Configuration
