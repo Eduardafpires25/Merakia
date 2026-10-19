@@ -1,7 +1,6 @@
 import { AlertCircle, ChevronDown, LogOut, ShoppingCart, User as UserIcon, X, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { api } from "../lib/api";
+import { Link } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { useIterations } from "../contexts/IterationsContext";
 import { ThemeToggle } from "./ThemeToggle";

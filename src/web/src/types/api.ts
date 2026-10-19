@@ -5,12 +5,21 @@ export interface User {
   name: string;
   email: string;
   phone?: string | null;
+  avatar_url?: string | null;
+  zip_code?: string | null;
+  address?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
+  state?: string | null;
   role: UserRole;
   is_active: boolean;
   is_verified: boolean;
   email_verified: boolean;
   created_at: string;
 }
+
 
 export interface TokenResponse {
   access_token: string;
@@ -72,8 +81,11 @@ export interface SellerListItem {
   state?: string | null;
   min_order_quantity: number;
   estimated_days?: number | null;
+  accepts_custom_designs?: boolean;
   user_name?: string | null;
   logo_url?: string | null;
+  average_rating?: number | null;
+  total_reviews?: number;
 }
 
 export interface SellerListResponse {
@@ -145,11 +157,22 @@ export interface Iteration {
   updated_at: string;
 }
 
+export interface OrderReferenceImage {
+  id: string;
+  order_id: string;
+  image_key: string;
+  image_url?: string | null;
+  caption?: string | null;
+  position: number;
+  created_at: string;
+}
+
 export interface Order {
   id: string;
   title: string;
   description: string;
   product_type?: string | null;
+  product_options?: Record<string, any>;
   quantity: number;
   estimated_price?: string | null;
   status: OrderStatus;
@@ -163,10 +186,12 @@ export interface Order {
   updated_at: string;
   iterations: Iteration[];
   approved_iteration?: Iteration | null;
+  reference_images?: OrderReferenceImage[];
   image_url?: string | null;
   shipping_address?: string | null;
   shipping_number?: string | null;
   shipping_complement?: string | null;
+  shipping_neighborhood?: string | null;
   shipping_city?: string | null;
   shipping_state?: string | null;
   shipping_zip_code?: string | null;
@@ -178,6 +203,7 @@ export interface OrderListItem {
   title: string;
   product_type?: string | null;
   quantity: number;
+  estimated_price?: string | number | null;
   status: OrderStatus;
   seller_id?: string | null;
   client_id: string;
@@ -196,4 +222,25 @@ export interface OrderListResponse {
 export interface ApiErrorBody {
   detail?: string | { field: string; message: string }[];
   errors?: { field: string; message: string }[];
+}
+
+export interface OrderReview {
+  id: string;
+  order_id?: string | null;
+  seller_id: string;
+  client_id?: string | null;
+  client_name: string;
+  product_title?: string | null;
+  rating: number;
+  comment?: string | null;
+  is_edited: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SellerReviewsListResponse {
+  items: OrderReview[];
+  total: number;
+  average_rating: number;
+  rating_distribution: Record<number, number>;
 }

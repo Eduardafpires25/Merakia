@@ -21,6 +21,8 @@ from src.database.models.seller_product_spec import SellerProductSpec
 from src.database.models.seller_product_image import SellerProductImage
 from src.database.models.order_reference_image import OrderReferenceImage
 from src.database.models.cart_item import CartItem
+from src.database.models.payment import Payment, PaymentStatus
+from src.database.models.order_review import OrderReview
 
 __all__ = [
     "TimestampMixin",
@@ -29,6 +31,7 @@ __all__ = [
     "OrderStatus",
     "IterationStatus",
     "SellerCategory",
+    "PaymentStatus",
     "User",
     "Order",
     "Token",
@@ -40,4 +43,6 @@ __all__ = [
     "SellerProductImage",
     "OrderReferenceImage",
     "CartItem",
+    "Payment",
+    "OrderReview",
 ]

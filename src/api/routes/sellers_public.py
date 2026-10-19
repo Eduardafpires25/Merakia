@@ -23,6 +23,7 @@ from src.api.repositories.seller_repository import (
     SellerProductSpecRepository,
 )
 from src.api.repositories.product_image_repository import SellerProductImageRepository
+from src.api.repositories.review_repository import ReviewRepository
 from src.storage import image_service
 
 router = APIRouter(prefix="/sellers", tags=["sellers-public"])
@@ -44,7 +45,16 @@ def _image_to_response(img: SellerProductImage) -> ProductImageResponse:
     )
 
 
-def _seller_to_list_item(seller: SellerProfile) -> SellerProfileListItem:
+def _seller_to_list_item(seller: SellerProfile, db: Optional[Session] = None) -> SellerProfileListItem:
+    avg_rating = None
+    total_reviews = 0
+    if db:
+        review_repo = ReviewRepository(db)
+        avg, count, _ = review_repo.get_seller_stats(seller.user_id)
+        if count > 0:
+            avg_rating = avg
+            total_reviews = count
+
     return SellerProfileListItem(
         id=seller.id,
         store_name=seller.store_name,
@@ -61,6 +71,8 @@ def _seller_to_list_item(seller: SellerProfile) -> SellerProfileListItem:
         is_open=seller.is_open,
         user_name=seller.user.name if seller.user else None,
         logo_url=_url(seller.logo_key),
+        average_rating=avg_rating,
+        total_reviews=total_reviews,
     )
 
 
@@ -79,7 +91,20 @@ def _product_to_list_item(spec: SellerProductSpec) -> ProductSpecListItem:
     )
 
 
-def _seller_to_detail(seller: SellerProfile, products: List[SellerProductSpec]) -> SellerDetailResponse:
+def _seller_to_detail(
+    seller: SellerProfile,
+    products: List[SellerProductSpec],
+    db: Optional[Session] = None,
+) -> SellerDetailResponse:
+    avg_rating = None
+    total_reviews = 0
+    if db:
+        review_repo = ReviewRepository(db)
+        avg, count, _ = review_repo.get_seller_stats(seller.user_id)
+        if count > 0:
+            avg_rating = avg
+            total_reviews = count
+
     return SellerDetailResponse(
         id=seller.id,
         user_id=seller.user_id,
@@ -104,6 +129,8 @@ def _seller_to_detail(seller: SellerProfile, products: List[SellerProductSpec]) 
         user_avatar_url=_url(seller.user.avatar_key) if seller.user else None,
         email_verified=seller.user.email_verified if seller.user else None,
         products=[_product_to_list_item(p) for p in products],
+        average_rating=avg_rating,
+        total_reviews=total_reviews,
     )
 
 
@@ -120,7 +147,7 @@ def list_sellers(
     sellers = seller_repo.list_active(category=category, search=search, skip=skip, limit=limit)
     total = seller_repo.count_active(category=category, search=search)
     return SellerListResponse(
-        items=[_seller_to_list_item(s) for s in sellers],
+        items=[_seller_to_list_item(s, db=db) for s in sellers],
         total=total, skip=skip, limit=limit,
     )
 
@@ -139,7 +166,7 @@ def get_seller_by_slug(slug: str, db: Session = Depends(get_db)):
     if not seller or not seller.is_open:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Loja nao encontrada.")
     products = product_repo.list_by_seller(seller.id, active_only=True)
-    return _seller_to_detail(seller, products)
+    return _seller_to_detail(seller, products, db=db)
 
 
 @router.get("/{seller_id}", response_model=SellerDetailResponse)
@@ -151,7 +178,7 @@ def get_seller_detail(seller_id: uuid.UUID, db: Session = Depends(get_db)):
     if not seller or not seller.is_open:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Loja nao encontrada.")
     products = product_repo.list_by_seller(seller_id, active_only=True)
-    return _seller_to_detail(seller, products)
+    return _seller_to_detail(seller, products, db=db)
 
 
 @router.get("/{seller_id}/products", response_model=List[ProductSpecListItem])

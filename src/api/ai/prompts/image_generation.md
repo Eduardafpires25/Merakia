@@ -30,6 +30,8 @@ Atue como um **diretor de arte e fotógrafo profissional** especializado em foto
 ### O Produto
 - O produto deve ser o **único elemento central** da imagem
 - Toda personalização descrita pelo cliente deve aparecer **impressa, gravada ou aplicada no produto**
+- **Fidelidade Cromática e Hexadecimal:** Quando cores forem especificadas nos parâmetros do produto (com nome e código `#HEX`), a cor base/superfície do produto DEVE reproduzir essa tonalidade exata com máxima precisão física, mantendo reflexos, sombreamentos e iluminação coerentes.
+- **Aplicação de Logotipo e Marca:** Sempre que houver menção a logotipos ou referências visuais anexadas pelo cliente, a logo/marca DEVE ser renderizada como elemento principal gravado, bordado, estampado ou impresso na área nobre frontal do produto (mockup comercial de alta definição), com proporções e contraste impecáveis.
 - Mostrar o produto em **ângulo que maximize a visibilidade** da arte/personalização
 
 ### Iluminação

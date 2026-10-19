@@ -35,6 +35,8 @@ class SellerProfileBase(BaseModel):
     accepts_custom_designs: bool = True
     min_order_quantity: int = Field(default=1, ge=1)
     estimated_days: Optional[int] = Field(None, ge=1, le=365)
+    pix_key: Optional[str] = Field(None, max_length=100)
+    pix_key_type: Optional[str] = Field(None, max_length=30)
 
 
 class SellerProfileCreate(SellerProfileBase):
@@ -70,6 +72,8 @@ class SellerProfileUpdate(BaseModel):
     min_order_quantity: Optional[int] = Field(None, ge=1)
     estimated_days: Optional[int] = Field(None, ge=1, le=365)
     is_open: Optional[bool] = None
+    pix_key: Optional[str] = Field(None, max_length=100)
+    pix_key_type: Optional[str] = Field(None, max_length=30)
 
 
 class SellerProfileResponse(BaseModel):
@@ -88,6 +92,8 @@ class SellerProfileResponse(BaseModel):
     min_order_quantity: int
     estimated_days: Optional[int] = None
     is_open: bool
+    pix_key: Optional[str] = None
+    pix_key_type: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     # URLs de imagens (geradas dinamicamente)
@@ -97,7 +103,9 @@ class SellerProfileResponse(BaseModel):
     user_name: Optional[str] = None
     user_email: Optional[str] = None
     user_avatar_url: Optional[str] = None
-    email_verified: Optional[bool] = None
+    # Reputação e avaliações da loja
+    average_rating: Optional[float] = None
+    total_reviews: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -119,6 +127,8 @@ class SellerProfileListItem(BaseModel):
     is_open: bool = True
     user_name: Optional[str] = None
     logo_url: Optional[str] = None
+    average_rating: Optional[float] = None
+    total_reviews: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 

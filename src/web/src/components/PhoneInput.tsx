@@ -36,20 +36,44 @@ export function PhoneInput({ value, onChange, required = false, className = "" }
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Parse existing value to set country and phone number
-  useState(() => {
-    if (value) {
-      // Try to find matching country by dial code
-      for (const country of countries) {
-        if (value.startsWith(`+${country.dialCode}`)) {
-          setSelectedCountry(country);
-          const phone = value.replace(`+${country.dialCode}`, "").trim();
-          setPhoneNumber(phone);
-          break;
-        }
+  // Parse existing value to set country and phone number reactively
+  useEffect(() => {
+    if (!value) {
+      setPhoneNumber("");
+      return;
+    }
+
+    const clean = value.replace(/\D/g, "");
+    if (!clean) {
+      setPhoneNumber("");
+      return;
+    }
+
+    // 1) Se veio com prefixo +, ex: +55 62999998888
+    let foundCountry = countries.find((c) => value.trim().startsWith(`+${c.dialCode}`));
+    let numberWithoutDial = "";
+
+    if (foundCountry) {
+      numberWithoutDial = clean.slice(foundCountry.dialCode.length);
+    } else {
+      // 2) Se veio apenas números (ex: 5562999998888 salvo no banco)
+      foundCountry = countries.find(
+        (c) => clean.startsWith(c.dialCode) && clean.length > c.dialCode.length + 7
+      );
+      if (foundCountry) {
+        numberWithoutDial = clean.slice(foundCountry.dialCode.length);
+      } else {
+        // 3) Padrão Brasil (DDD + número)
+        foundCountry = countries[0];
+        numberWithoutDial = clean;
       }
     }
-  });
+
+    setSelectedCountry(foundCountry);
+    const formatted = formatPhone(numberWithoutDial, foundCountry.mask);
+    setPhoneNumber(formatted);
+  }, [value]);
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -101,12 +125,6 @@ export function PhoneInput({ value, onChange, required = false, className = "" }
     setPhoneNumber(newFormatted);
     const fullValue = `+${country.dialCode} ${numbers}`;
     onChange(fullValue);
-  };
-
-  const getRawValue = (): string => {
-    if (!value) return "";
-    // Remove all non-digit characters except the plus
-    return value.replace(/\D/g, "");
   };
 
   const getFlagUrl = (code: string) => {

@@ -203,6 +203,22 @@ class ImageService:
             subfolder=today,
         )
 
+    def upload_order_reference(
+        self,
+        order_id: str,
+        file: BinaryIO,
+        filename: str,
+        content_type: Optional[str] = None,
+    ) -> StoredFile:
+        return self.upload_image(
+            category=ImageCategory.ORDER,
+            owner_id=order_id,
+            file=file,
+            filename=filename,
+            content_type=content_type,
+            subfolder="references",
+        )
+
     # ------------------------------------------------------------
     # Operacoes gerais
     # ------------------------------------------------------------

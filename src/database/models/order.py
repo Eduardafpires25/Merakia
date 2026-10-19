@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from src.database.models.project_iteration import ProjectIteration
     from src.database.models.order_status_history import OrderStatusHistory
     from src.database.models.order_reference_image import OrderReferenceImage
+    from src.database.models.order_review import OrderReview
 
 
 class Order(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -73,6 +74,7 @@ class Order(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     shipping_address: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     shipping_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     shipping_complement: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    shipping_neighborhood: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     shipping_city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     shipping_state: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)
     shipping_zip_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
@@ -107,6 +109,11 @@ class Order(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         back_populates="order",
         cascade="all, delete-orphan",
         order_by="OrderReferenceImage.position",
+    )
+    review: Mapped[Optional["OrderReview"]] = relationship(
+        "OrderReview",
+        uselist=False,
+        back_populates="order",
     )
 
     def __repr__(self) -> str:  # pragma: no cover

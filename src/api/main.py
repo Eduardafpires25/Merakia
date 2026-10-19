@@ -24,6 +24,8 @@ from src.api.routes.sellers_me import router as sellers_me_router
 from src.api.routes.users_me import router as users_me_router
 from src.api.routes.orders import router as orders_router, seller_router as seller_orders_router
 from src.api.routes.cart import router as cart_router
+from src.api.routes.payments import router as payments_router
+from src.api.routes.reviews import router as reviews_router
 
 
 @asynccontextmanager
@@ -86,6 +88,8 @@ app.include_router(seller_orders_router, prefix="/api/v1")
 app.include_router(orders_router, prefix="/api/v1")
 app.include_router(sellers_public_router, prefix="/api/v1")
 app.include_router(cart_router, prefix="/api/v1")
+app.include_router(payments_router, prefix="/api/v1")
+app.include_router(reviews_router, prefix="/api/v1")
 
 
 # Mount static files para imagens quando usando storage local

@@ -9,6 +9,7 @@ from sqlalchemy import desc, func, or_
 from sqlalchemy.orm import Session, joinedload, selectinload
 
 from src.database.models.order import Order
+from src.database.models.order_reference_image import OrderReferenceImage
 from src.database.models.order_status_history import OrderStatusHistory
 from src.database.models.project_iteration import ProjectIteration
 from src.database.models.enums import IterationStatus, OrderStatus
@@ -24,6 +25,7 @@ class OrderRepository:
             .options(
                 selectinload(Order.iterations),
                 joinedload(Order.approved_iteration),
+                selectinload(Order.reference_images),
             )
             .filter(Order.id == order_id)
             .first()
@@ -103,6 +105,7 @@ class OrderRepository:
         shipping_address: Optional[str] = None,
         shipping_number: Optional[str] = None,
         shipping_complement: Optional[str] = None,
+        shipping_neighborhood: Optional[str] = None,
         shipping_city: Optional[str] = None,
         shipping_state: Optional[str] = None,
         shipping_zip_code: Optional[str] = None,
@@ -121,6 +124,7 @@ class OrderRepository:
             shipping_address=shipping_address,
             shipping_number=shipping_number,
             shipping_complement=shipping_complement,
+            shipping_neighborhood=shipping_neighborhood,
             shipping_city=shipping_city,
             shipping_state=shipping_state,
             shipping_zip_code=shipping_zip_code,
@@ -245,3 +249,42 @@ class IterationRepository:
         self.db.commit()
         self.db.refresh(iteration)
         return iteration
+
+
+class OrderReferenceImageRepository:
+    def __init__(self, db: Session) -> None:
+        self.db = db
+
+    def get_by_id(self, image_id: uuid.UUID) -> Optional[OrderReferenceImage]:
+        return self.db.query(OrderReferenceImage).filter(OrderReferenceImage.id == image_id).first()
+
+    def list_by_order(self, order_id: uuid.UUID) -> List[OrderReferenceImage]:
+        return (
+            self.db.query(OrderReferenceImage)
+            .filter(OrderReferenceImage.order_id == order_id)
+            .order_by(OrderReferenceImage.position, OrderReferenceImage.created_at)
+            .all()
+        )
+
+    def create(
+        self,
+        *,
+        order_id: uuid.UUID,
+        image_key: str,
+        caption: Optional[str] = None,
+        position: int = 0,
+    ) -> OrderReferenceImage:
+        image = OrderReferenceImage(
+            order_id=order_id,
+            image_key=image_key,
+            caption=caption,
+            position=position,
+        )
+        self.db.add(image)
+        self.db.commit()
+        self.db.refresh(image)
+        return image
+
+    def delete(self, image: OrderReferenceImage) -> None:
+        self.db.delete(image)
+        self.db.commit()

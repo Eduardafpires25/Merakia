@@ -1,10 +1,10 @@
-import { ArrowRight, Loader2, Package, Store } from "lucide-react";
+import { ArrowRight, Loader2, Store } from "lucide-react";
 import { LogoIcon } from "../components/LogoIcon";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FeatureBar } from "../components/FeatureBar";
 import { api } from "../lib/api";
-import { formatCategory, ProductListItem, SellerListItem } from "../types/api";
+import { formatCategory, SellerListItem } from "../types/api";
 
 export function HomePage() {
   const [sellers, setSellers] = useState<SellerListItem[]>([]);

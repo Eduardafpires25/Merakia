@@ -191,6 +191,7 @@ class TestOrderModel:
             status=OrderStatus.PAID,
             submitted_at=datetime.now(timezone.utc),
             shipping_address="Rua Teste, 123",
+            shipping_neighborhood="Centro",
             shipping_city="São Paulo",
             shipping_state="SP",
             shipping_zip_code="01234-567",
@@ -202,6 +203,7 @@ class TestOrderModel:
         db_session.refresh(order)
 
         assert order.shipping_address == "Rua Teste, 123"
+        assert order.shipping_neighborhood == "Centro"
         assert order.shipping_state == "SP"
         assert order.image_url == "https://example.com/image.jpg"
 

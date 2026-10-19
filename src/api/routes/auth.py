@@ -127,6 +127,14 @@ def me(current_user: User = Depends(get_current_active_user), db: Session = Depe
         email_verified=current_user.email_verified,
         avatar_key=current_user.avatar_key,
         avatar_url=avatar_url,
+        zip_code=current_user.zip_code,
+        address=current_user.address,
+        number=current_user.number,
+        complement=current_user.complement,
+        neighborhood=current_user.neighborhood,
+        city=current_user.city,
+        state=current_user.state,
         created_at=current_user.created_at,
         iterations_remaining=limit_data["remaining"],
     )
+

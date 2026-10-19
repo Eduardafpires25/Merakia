@@ -1,6 +1,6 @@
 import axios from "axios";
 import {
-  Image as ImageIcon, Loader2, Package, Pencil, Plus, Save, Store, Trash2, Upload, X,
+  Image as ImageIcon, Loader2, Package, Palette, Pencil, Plus, Save, Store, Trash2, Upload, X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
@@ -9,6 +9,11 @@ import { PhoneInput } from "../components/PhoneInput";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { formatCategory, type OrderListResponse, ProductListItem, SellerCategory } from "../types/api";
+import {
+  isColorOption,
+  parseColorValue,
+  toPickerHex,
+} from "../components/ColorSwatchSelector";
 
 interface SellerProfile {
   id: string;
@@ -26,6 +31,8 @@ interface SellerProfile {
   is_open: boolean;
   logo_url?: string | null;
   banner_url?: string | null;
+  pix_key?: string | null;
+  pix_key_type?: string | null;
 }
 
 const categories: SellerCategory[] = [
@@ -227,6 +234,8 @@ function CreateProfileForm({ onCreated }: { onCreated: () => void }) {
   const [state, setState] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [estimated, setEstimated] = useState(7);
+  const [pixKey, setPixKey] = useState("");
+  const [pixKeyType, setPixKeyType] = useState("cpf");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -244,6 +253,8 @@ function CreateProfileForm({ onCreated }: { onCreated: () => void }) {
         estimated_days: estimated,
         accepts_custom_designs: true,
         min_order_quantity: 1,
+        pix_key: pixKey || null,
+        pix_key_type: pixKeyType || null,
       });
       onCreated();
     } catch (err) {
@@ -288,6 +299,28 @@ function CreateProfileForm({ onCreated }: { onCreated: () => void }) {
           </div>
         </div>
         <div><label className="label">WhatsApp</label><PhoneInput value={whatsapp} onChange={setWhatsapp} className="w-full" /></div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-50 dark:bg-ink-700/50 border border-slate-200 dark:border-ink-600">
+          <div>
+            <label className="label">Tipo de Chave PIX</label>
+            <select value={pixKeyType} onChange={(e) => setPixKeyType(e.target.value)} className="input">
+              <option value="cpf">CPF</option>
+              <option value="cnpj">CNPJ</option>
+              <option value="email">E-mail</option>
+              <option value="phone">Telefone</option>
+              <option value="random">Chave Aleatória</option>
+            </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className="label">Chave PIX para Recebimento</label>
+            <input
+              value={pixKey}
+              onChange={(e) => setPixKey(e.target.value)}
+              placeholder="Digite sua chave PIX para repasse"
+              className="input"
+            />
+          </div>
+        </div>
 
         {error && <div className="text-sm text-red-500">{error}</div>}
 
@@ -350,6 +383,20 @@ function ProfileCard({ profile, onSaved, onEdit }: { profile: SellerProfile; onS
           <h2 className="text-xl font-bold">{profile.store_name}</h2>
           <p className="text-brand-500 capitalize text-sm">{formatCategory(profile.category)}</p>
           {profile.description && <p className="text-sm text-slate-500 mt-1">{profile.description}</p>}
+
+          {profile.pix_key ? (
+            <div className="mt-2 text-xs flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
+              <span>Chave PIX de Recebimento ({profile.pix_key_type?.toUpperCase() || "GERAL"}):</span>
+              <span className="font-mono bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                {profile.pix_key}
+              </span>
+            </div>
+          ) : (
+            <div className="mt-2 text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
+              <span>⚠️ Nenhuma chave PIX configurada. Clique em "Editar infos" para cadastrar sua chave e receber repasses.</span>
+            </div>
+          )}
+
           <div className="flex gap-2 mt-3">
             <button onClick={() => bannerRef.current?.click()} disabled={uploading === "banner"}
               className="btn-outline !py-2 !px-3 text-sm disabled:opacity-60">
@@ -388,6 +435,8 @@ function EditProfileModal({ open, onClose, profile, onSaved }: EditProfileModalP
   const [whatsapp, setWhatsapp] = useState(profile.whatsapp || "");
   const [instagram, setInstagram] = useState(profile.instagram || "");
   const [estimated, setEstimated] = useState(profile.estimated_days || 7);
+  const [pixKey, setPixKey] = useState(profile.pix_key || "");
+  const [pixKeyType, setPixKeyType] = useState(profile.pix_key_type || "cpf");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -401,6 +450,8 @@ function EditProfileModal({ open, onClose, profile, onSaved }: EditProfileModalP
       setWhatsapp(profile.whatsapp || "");
       setInstagram(profile.instagram || "");
       setEstimated(profile.estimated_days || 7);
+      setPixKey(profile.pix_key || "");
+      setPixKeyType(profile.pix_key_type || "cpf");
     }
   }, [open, profile]);
 
@@ -418,6 +469,8 @@ function EditProfileModal({ open, onClose, profile, onSaved }: EditProfileModalP
         whatsapp: whatsapp || null,
         instagram: instagram || null,
         estimated_days: estimated,
+        pix_key: pixKey || null,
+        pix_key_type: pixKeyType || null,
       });
       onSaved();
       onClose();
@@ -461,6 +514,28 @@ function EditProfileModal({ open, onClose, profile, onSaved }: EditProfileModalP
         </div>
         <div><label className="label">WhatsApp</label><PhoneInput value={whatsapp} onChange={setWhatsapp} className="w-full" /></div>
         <div><label className="label">Instagram</label><input value={instagram} onChange={(e) => setInstagram(e.target.value)} className="input" /></div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-50 dark:bg-ink-700/50 border border-slate-200 dark:border-ink-600">
+          <div>
+            <label className="label">Tipo de Chave PIX</label>
+            <select value={pixKeyType} onChange={(e) => setPixKeyType(e.target.value)} className="input">
+              <option value="cpf">CPF</option>
+              <option value="cnpj">CNPJ</option>
+              <option value="email">E-mail</option>
+              <option value="phone">Telefone</option>
+              <option value="random">Chave Aleatória</option>
+            </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className="label">Chave PIX para Recebimento</label>
+            <input
+              value={pixKey}
+              onChange={(e) => setPixKey(e.target.value)}
+              placeholder="Digite sua chave PIX para repasses"
+              className="input"
+            />
+          </div>
+        </div>
 
         {error && <div className="text-sm text-red-500">{error}</div>}
 
@@ -527,10 +602,33 @@ function ProductRow({ product, onChanged, onEdit }: ProductRowProps) {
   );
 }
 
-interface CustomizationOption {
+interface ColorItem {
+  id: string;
   name: string;
-  values: string[];
+  hex: string;
 }
+
+interface CustomizationOption {
+  id: string;
+  name: string;
+  isColor: boolean;
+  values: string[];
+  colors: ColorItem[];
+}
+
+const createColorItem = (name = "", hex = "#3B82F6"): ColorItem => ({
+  id: `c_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+  name,
+  hex,
+});
+
+const createOption = (name = "", isColor = false, values: string[] = [""], colors: ColorItem[] = []): CustomizationOption => ({
+  id: `opt_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+  name,
+  isColor,
+  values,
+  colors,
+});
 
 interface ProductModalProps {
   open: boolean;
@@ -560,14 +658,38 @@ function ProductModal({ open, onClose, onCreated, product }: ProductModalProps) 
         setDescription(product.description || "");
         setBasePrice(product.base_price ? String(product.base_price) : "");
         setIsCustomizable(product.is_customizable);
-        if (product.customization_options) {
-          const opts = Object.entries(product.customization_options).map(([name, values]) => ({
-            name,
-            values: Array.isArray(values) ? values : [values]
-          }));
-          setCustomizationOptions(opts.length > 0 ? opts : [{ name: "", values: [""] }]);
+        if (product.customization_options && Object.keys(product.customization_options).length > 0) {
+          const opts: CustomizationOption[] = Object.entries(product.customization_options).map(([optName, rawValues], idx) => {
+            const valuesArr = Array.isArray(rawValues) ? rawValues : [rawValues];
+            const isColor = isColorOption(optName, valuesArr);
+            if (isColor) {
+              const colorList = valuesArr.map((v, cIdx) => {
+                const parsed = parseColorValue(v);
+                return {
+                  id: `c_${idx}_${cIdx}_${Math.random().toString(36).substring(2, 8)}`,
+                  name: parsed.name === parsed.hex ? "" : parsed.name,
+                  hex: parsed.hex || "#3B82F6",
+                };
+              });
+              return {
+                id: `opt_${idx}_${Math.random().toString(36).substring(2, 8)}`,
+                name: optName,
+                isColor: true,
+                values: [],
+                colors: colorList.length > 0 ? colorList : [createColorItem("", "#3B82F6")],
+              };
+            }
+            return {
+              id: `opt_${idx}_${Math.random().toString(36).substring(2, 8)}`,
+              name: optName,
+              isColor: false,
+              values: valuesArr.length > 0 ? valuesArr : [""],
+              colors: [],
+            };
+          });
+          setCustomizationOptions(opts);
         } else {
-          setCustomizationOptions([{ name: "", values: [""] }]);
+          setCustomizationOptions([createOption("", false, [""])]);
         }
         setImagePreview(product.cover_url || null);
       } else {
@@ -584,35 +706,145 @@ function ProductModal({ open, onClose, onCreated, product }: ProductModalProps) 
   }, [open, product]);
 
   const addOption = () => {
-    setCustomizationOptions([...customizationOptions, { name: "", values: [""] }]);
+    setCustomizationOptions([...customizationOptions, createOption("", false, [""])]);
   };
 
-  const removeOption = (index: number) => {
-    setCustomizationOptions(customizationOptions.filter((_, i) => i !== index));
+  const addColorOption = () => {
+    setCustomizationOptions([
+      ...customizationOptions,
+      createOption("Cores disponíveis", true, [], [
+        createColorItem("Branco", "#FFFFFF"),
+        createColorItem("Preto", "#1F2937"),
+        createColorItem("Vermelho", "#EF4444"),
+      ]),
+    ]);
   };
 
-  const updateOptionName = (index: number, value: string) => {
-    const updated = [...customizationOptions];
-    updated[index].name = value;
-    setCustomizationOptions(updated);
+  const toggleOptionType = (optId: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        if (opt.isColor) {
+          // Switch from color to simple text values
+          const textValues = opt.colors
+            .map((c) => {
+              let h = c.hex.trim();
+              if (h && !h.startsWith("#")) h = `#${h}`;
+              if (c.name.trim() && h) return `${c.name.trim()} (${h.toUpperCase()})`;
+              return c.name.trim() || h || "";
+            })
+            .filter(Boolean);
+          return {
+            ...opt,
+            isColor: false,
+            values: textValues.length > 0 ? textValues : [""],
+            colors: [],
+          };
+        } else {
+          // Switch from text to color palette
+          const colorItems = opt.values.map((v) => {
+            const parsed = parseColorValue(v);
+            return createColorItem(parsed.name === parsed.hex ? "" : parsed.name, parsed.hex);
+          });
+          return {
+            ...opt,
+            isColor: true,
+            values: [],
+            colors: colorItems.length > 0 ? colorItems : [createColorItem("", "#3B82F6")],
+          };
+        }
+      })
+    );
   };
 
-  const addValue = (optionIndex: number) => {
-    const updated = [...customizationOptions];
-    updated[optionIndex].values.push("");
-    setCustomizationOptions(updated);
+  const removeOption = (optId: string) => {
+    setCustomizationOptions(customizationOptions.filter((opt) => opt.id !== optId));
   };
 
-  const updateValue = (optionIndex: number, valueIndex: number, value: string) => {
-    const updated = [...customizationOptions];
-    updated[optionIndex].values[valueIndex] = value;
-    setCustomizationOptions(updated);
+  const updateOptionName = (optId: string, value: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return { ...opt, name: value };
+      })
+    );
   };
 
-  const removeValue = (optionIndex: number, valueIndex: number) => {
-    const updated = [...customizationOptions];
-    updated[optionIndex].values = updated[optionIndex].values.filter((_, i) => i !== valueIndex);
-    setCustomizationOptions(updated);
+  const addColorItem = (optId: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return {
+          ...opt,
+          colors: [...opt.colors, createColorItem("", "#3B82F6")],
+        };
+      })
+    );
+  };
+
+  const updateColorName = (optId: string, colorId: string, name: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return {
+          ...opt,
+          colors: opt.colors.map((c) => (c.id === colorId ? { ...c, name } : c)),
+        };
+      })
+    );
+  };
+
+  const updateColorHex = (optId: string, colorId: string, hex: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return {
+          ...opt,
+          colors: opt.colors.map((c) => (c.id === colorId ? { ...c, hex } : c)),
+        };
+      })
+    );
+  };
+
+  const removeColorItem = (optId: string, colorId: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return {
+          ...opt,
+          colors: opt.colors.filter((c) => c.id !== colorId),
+        };
+      })
+    );
+  };
+
+  const addValue = (optId: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return { ...opt, values: [...opt.values, ""] };
+      })
+    );
+  };
+
+  const updateValue = (optId: string, valueIndex: number, value: string) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        const newValues = [...opt.values];
+        newValues[valueIndex] = value;
+        return { ...opt, values: newValues };
+      })
+    );
+  };
+
+  const removeValue = (optId: string, valueIndex: number) => {
+    setCustomizationOptions((prev) =>
+      prev.map((opt) => {
+        if (opt.id !== optId) return opt;
+        return { ...opt, values: opt.values.filter((_, i) => i !== valueIndex) };
+      })
+    );
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -629,11 +861,33 @@ function ProductModal({ open, onClose, onCreated, product }: ProductModalProps) 
     try {
       let options: Record<string, string[]> = {};
       if (isCustomizable) {
-        const validOptions = customizationOptions.filter(opt => opt.name && opt.values.length > 0);
-        for (const opt of validOptions) {
-          const validValues = opt.values.filter(v => v.trim());
-          if (validValues.length > 0) {
-            options[opt.name] = validValues;
+        for (const opt of customizationOptions) {
+          const trimmedName = opt.name.trim();
+          if (!trimmedName) continue;
+
+          if (opt.isColor) {
+            const validColors = opt.colors
+              .filter((c) => c.name.trim() || c.hex.trim())
+              .map((c) => {
+                let cleanHex = c.hex.trim();
+                if (cleanHex && !cleanHex.startsWith("#")) cleanHex = `#${cleanHex}`;
+                cleanHex = cleanHex.toUpperCase();
+                const cleanName = c.name.trim();
+
+                if (cleanName && cleanHex && cleanName.toUpperCase() !== cleanHex) {
+                  return `${cleanName} (${cleanHex})`;
+                }
+                return cleanName || cleanHex || "#000000";
+              });
+
+            if (validColors.length > 0) {
+              options[trimmedName] = validColors;
+            }
+          } else {
+            const validValues = opt.values.map((v) => v.trim()).filter(Boolean);
+            if (validValues.length > 0) {
+              options[trimmedName] = validValues;
+            }
           }
         }
       }
@@ -751,61 +1005,163 @@ function ProductModal({ open, onClose, onCreated, product }: ProductModalProps) 
         </div>
         {isCustomizable && (
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <label className="label !mb-0">Opções de personalização</label>
-              <button
-                type="button"
-                onClick={addOption}
-                className="text-sm text-brand-500 hover:text-brand-600 font-medium"
-              >
-                + Adicionar opção
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={addColorOption}
+                  className="text-xs text-brand-500 hover:text-brand-600 font-medium inline-flex items-center gap-1 bg-brand-50 dark:bg-brand-500/10 px-2.5 py-1 rounded-lg border border-brand-200 dark:border-brand-500/30"
+                >
+                  <Palette className="w-3.5 h-3.5" /> + Cartela de cores
+                </button>
+                <button
+                  type="button"
+                  onClick={addOption}
+                  className="text-xs text-brand-500 hover:text-brand-600 font-medium py-1 px-2"
+                >
+                  + Outra opção
+                </button>
+              </div>
             </div>
-            {customizationOptions.map((option, optionIndex) => (
-              <div key={optionIndex} className="p-3 rounded-lg border border-slate-200 dark:border-ink-700 space-y-2">
+            {customizationOptions.map((option) => (
+              <div key={option.id} className="p-3.5 rounded-xl border border-slate-200 dark:border-ink-700 space-y-3 bg-white dark:bg-ink-800">
                 <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={option.name}
-                    onChange={(e) => updateOptionName(optionIndex, e.target.value)}
-                    className="input flex-1 !py-1.5"
-                    placeholder="Nome da opção (ex: tamanho)"
-                  />
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={option.name}
+                      onChange={(e) => updateOptionName(option.id, e.target.value)}
+                      className="input w-full !py-1.5"
+                      placeholder="Nome da opção (ex: Cor da caneca, Tamanho)"
+                    />
+                  </div>
+
+                  {/* Botão de alternar entre paleta de cores e texto simples */}
                   <button
                     type="button"
-                    onClick={() => removeOption(optionIndex)}
-                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"
+                    onClick={() => toggleOptionType(option.id)}
+                    className={`text-[11px] font-medium px-2.5 py-1 rounded-md border shrink-0 flex items-center gap-1.5 transition-colors ${
+                      option.isColor
+                        ? "bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-400 border-brand-200 dark:border-brand-500/30 hover:bg-brand-100"
+                        : "bg-slate-100 dark:bg-ink-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-ink-600 hover:bg-slate-200"
+                    }`}
+                    title={option.isColor ? "Clique para converter em lista de texto" : "Clique para converter em paleta de cores"}
+                  >
+                    <Palette className="w-3.5 h-3.5" />
+                    {option.isColor ? "Paleta de Cores" : "Converter p/ Cor"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => removeOption(option.id)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg shrink-0"
+                    title="Remover opção"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="space-y-1">
-                  {option.values.map((value, valueIndex) => (
-                    <div key={valueIndex} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={value}
-                        onChange={(e) => updateValue(optionIndex, valueIndex, e.target.value)}
-                        className="input flex-1 !py-1.5"
-                        placeholder="Valor (ex: 250ml)"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeValue(optionIndex, valueIndex)}
-                        className="p-1 text-slate-400 hover:text-red-500 rounded"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+
+                {option.isColor ? (
+                  <div className="space-y-2 pt-1 border-t border-slate-100 dark:border-ink-700/60">
+                    <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                      <span>Cores configuradas (Seletor + Nome + Hex)</span>
+                      <span>{option.colors.length} {option.colors.length === 1 ? "cor" : "cores"}</span>
                     </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => addValue(optionIndex)}
-                    className="text-sm text-slate-500 hover:text-brand-500"
-                  >
-                    + Adicionar valor
-                  </button>
-                </div>
+
+                    <div className="space-y-2">
+                      {option.colors.map((color) => (
+                        <div
+                          key={color.id}
+                          className="flex items-center gap-2 bg-slate-50 dark:bg-ink-700/40 p-2 rounded-xl border border-slate-200/80 dark:border-ink-600"
+                        >
+                          {/* Seletor nativo de cor */}
+                          <div className="relative shrink-0 flex items-center">
+                            <input
+                              type="color"
+                              value={toPickerHex(color.hex)}
+                              onChange={(e) => {
+                                updateColorHex(option.id, color.id, e.target.value.toUpperCase());
+                              }}
+                              className="w-9 h-9 rounded-lg cursor-pointer border border-slate-300 dark:border-ink-600 bg-transparent p-0.5"
+                              title="Clique para escolher a cor na paleta visual"
+                            />
+                          </div>
+
+                          {/* Nome comercial da cor */}
+                          <input
+                            type="text"
+                            value={color.name}
+                            onChange={(e) => updateColorName(option.id, color.id, e.target.value)}
+                            placeholder="Nome da cor (ex: Azul Petróleo)"
+                            className="input flex-1 !py-1.5 text-sm"
+                          />
+
+                          {/* Código Hexadecimal */}
+                          <input
+                            type="text"
+                            value={color.hex}
+                            maxLength={7}
+                            onChange={(e) => {
+                              let val = e.target.value;
+                              if (val && !val.startsWith("#")) val = "#" + val;
+                              updateColorHex(option.id, color.id, val.toUpperCase());
+                            }}
+                            placeholder="#000000"
+                            className="input w-24 !py-1.5 text-xs font-mono uppercase text-center shrink-0"
+                            title="Código hexadecimal (#RRGGBB)"
+                          />
+
+                          {/* Botão de exclusão */}
+                          <button
+                            type="button"
+                            onClick={() => removeColorItem(option.id, color.id)}
+                            className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg shrink-0 transition-colors"
+                            title="Remover cor"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => addColorItem(option.id)}
+                      className="text-xs text-brand-500 hover:text-brand-600 font-medium py-1.5 px-3 inline-flex items-center gap-1.5 border border-dashed border-brand-300 dark:border-brand-500/40 rounded-lg hover:bg-brand-50/50 dark:hover:bg-brand-500/10 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Adicionar nova cor à cartela
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 pt-1 border-t border-slate-100 dark:border-ink-700/60">
+                    {option.values.map((value, valueIndex) => (
+                      <div key={valueIndex} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => updateValue(option.id, valueIndex, e.target.value)}
+                          className="input flex-1 !py-1.5"
+                          placeholder="Valor (ex: 250ml, Cerâmica)"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeValue(option.id, valueIndex)}
+                          className="p-1 text-slate-400 hover:text-red-500 rounded"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addValue(option.id)}
+                      className="text-sm text-slate-500 hover:text-brand-500"
+                    >
+                      + Adicionar valor
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
             {customizationOptions.length === 0 && (

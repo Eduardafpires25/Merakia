@@ -37,6 +37,15 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     # Avatar (chave interna do storage; URL gerada dinamicamente via image_service)
     avatar_key: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
+    # Endereço de entrega padrão do usuário
+    zip_code: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    complement: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    neighborhood: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    state: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
+
     # Pedidos feitos por este usuario (quando role=client)
     orders_as_client: Mapped[List["Order"]] = relationship(
         "Order",

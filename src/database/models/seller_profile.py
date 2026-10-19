@@ -61,6 +61,10 @@ class SellerProfile(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     logo_key: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     banner_key: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
+    # Dados de recebimento via PIX
+    pix_key: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    pix_key_type: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+
     user: Mapped["User"] = relationship("User", back_populates="seller_profile")
     product_specs: Mapped[List["SellerProductSpec"]] = relationship(
         "SellerProductSpec",

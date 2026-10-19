@@ -247,6 +247,56 @@ class AIClient:
             cost_usd=None,
         )
 
+    def analyze_reference_image(
+        self,
+        image_bytes: bytes,
+        mime_type: str = "image/png",
+    ) -> str:
+        """
+        Analisa uma imagem de referência anexada pelo cliente usando GPT-4o-mini Vision.
+        Extrai os textos exatos, personagens/ícones, cores e composição gráfica
+        para que o gerador de imagem consiga reproduzir fielmente a arte.
+        """
+        if settings.AI_PLACEHOLDER_MODE:
+            return "Placeholder art: cute 3D cartoon earth mascot with playful typography."
+
+        b64 = base64.b64encode(image_bytes).decode("utf-8")
+        prompt = (
+            "You are an expert art director. Analyze this logo or reference artwork image in detail "
+            "for an image generation model to accurately recreate it on a custom product mock-up.\n"
+            "In 2 to 4 concise sentences in English, describe:\n"
+            "1. Exact text, words, and typography (transcribe all visible words verbatim, e.g. brand name, slogans).\n"
+            "2. Visual elements, characters, icons, 3D shapes, or illustrations.\n"
+            "3. Exact colors of each element (e.g. coral red, vibrant green, deep blue, gold).\n"
+            "4. Placement and overall composition of the artwork."
+        )
+
+        try:
+            response = self._client.chat.completions.create(
+                model=self.text_model or "gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:{mime_type};base64,{b64}",
+                                    "detail": "high",
+                                },
+                            },
+                        ],
+                    }
+                ],
+                max_tokens=300,
+                temperature=0.2,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            logger.warning("Falha ao analisar imagem com Vision: %s", e)
+            return "Custom user artwork / logo provided by the client."
+
     @staticmethod
     def _build_iteration_prompt(description: str, product_type: Optional[str]) -> str:
         """Monta prompt final para geracao de imagem da iteracao."""

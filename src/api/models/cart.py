@@ -71,6 +71,7 @@ class CartCheckoutRequest(BaseModel):
     shipping_address: str
     shipping_number: Optional[str] = None
     shipping_complement: Optional[str] = None
+    shipping_neighborhood: Optional[str] = None
     shipping_city: str
     shipping_state: str
     shipping_zip_code: str
@@ -90,8 +91,12 @@ class CartCheckoutRequest(BaseModel):
     # Observações para o pedido
     notes: Optional[str] = None
     
+    # Salvar este endereço no perfil do usuário para próximas compras
+    save_address_to_profile: Optional[bool] = True
+
     # Ignorar erros durante o checkout (só funciona quando DEV_MODE=True)
     ignore_errors: Optional[bool] = False
+
 
 
 class CartCheckoutResponse(BaseModel):
@@ -105,3 +110,9 @@ class CartCheckoutResponse(BaseModel):
     
     # Mensagem de confirmação
     message: str
+
+    # Dados de pagamento PIX em custódia
+    payment_id: Optional[UUID] = None
+    pix_code: Optional[str] = None
+    pix_qr_code: Optional[str] = None
+    payment_status: Optional[str] = None

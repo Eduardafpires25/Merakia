@@ -60,6 +60,8 @@ def _seller_to_response(seller: SellerProfile) -> SellerProfileResponse:
         min_order_quantity=seller.min_order_quantity,
         estimated_days=seller.estimated_days,
         is_open=seller.is_open,
+        pix_key=seller.pix_key,
+        pix_key_type=seller.pix_key_type,
         created_at=seller.created_at,
         updated_at=seller.updated_at,
         logo_url=_url(seller.logo_key),
@@ -181,6 +183,8 @@ def create_profile(
         accepts_custom_designs=body.accepts_custom_designs,
         min_order_quantity=body.min_order_quantity,
         estimated_days=body.estimated_days,
+        pix_key=body.pix_key,
+        pix_key_type=body.pix_key_type,
     )
     logger.info("Perfil criado: %s (slug=%s)", seller.store_name, seller.slug)
     return _seller_to_response(seller_repo.get_by_id(seller.id))

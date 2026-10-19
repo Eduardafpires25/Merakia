@@ -105,6 +105,8 @@ class SellerRepository:
         accepts_custom_designs: bool = True,
         min_order_quantity: int = 1,
         estimated_days: Optional[int] = None,
+        pix_key: Optional[str] = None,
+        pix_key_type: Optional[str] = None,
     ) -> SellerProfile:
         """Cria perfil de seller."""
         seller = SellerProfile(
@@ -121,6 +123,8 @@ class SellerRepository:
             min_order_quantity=min_order_quantity,
             estimated_days=estimated_days,
             is_open=True,
+            pix_key=pix_key,
+            pix_key_type=pix_key_type,
         )
         self.db.add(seller)
         self.db.commit()

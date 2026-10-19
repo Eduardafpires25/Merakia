@@ -145,10 +145,18 @@ class UserResponse(BaseModel):
     email_verified: bool
     avatar_key: Optional[str] = None
     avatar_url: Optional[str] = None
+    zip_code: Optional[str] = None
+    address: Optional[str] = None
+    number: Optional[str] = None
+    complement: Optional[str] = None
+    neighborhood: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     created_at: datetime
     iterations_remaining: int = 0
 
     model_config = {"from_attributes": True}
+
 
 
 class MessageResponse(BaseModel):

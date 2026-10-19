@@ -3,6 +3,7 @@ import { FloatingChatButton } from "./components/FloatingChatButton";
 import { Header } from "./components/Header";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { IterationsProvider } from "./contexts/IterationsContext";
+import { CartProvider } from "./contexts/CartContext";
 import CartPage from "./pages/Cart";
 import { ChatAIPage } from "./pages/ChatAI";
 import { EmailVerificationPage } from "./pages/EmailVerification";
@@ -32,8 +33,10 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <IterationsProvider>
-      <Routes>
+    <CartProvider>
+      <IterationsProvider>
+        <Routes>
+
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
@@ -72,5 +75,7 @@ export default function App() {
         </Route>
       </Routes>
     </IterationsProvider>
+    </CartProvider>
   );
 }
+

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -69,12 +69,24 @@ class StatusHistoryItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class OrderReferenceImageResponse(BaseModel):
+    id: uuid.UUID
+    order_id: uuid.UUID
+    image_key: str
+    image_url: Optional[str] = None
+    caption: Optional[str] = None
+    position: int = 0
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class OrderResponse(BaseModel):
     id: uuid.UUID
     title: str
     description: str
     product_type: Optional[str] = None
-    product_options: Dict[str, str] = Field(default_factory=dict)
+    product_options: Dict[str, Any] = Field(default_factory=dict)
     quantity: int
     estimated_price: Optional[Decimal] = None
     status: OrderStatus
@@ -91,6 +103,7 @@ class OrderResponse(BaseModel):
     shipping_address: Optional[str] = None
     shipping_number: Optional[str] = None
     shipping_complement: Optional[str] = None
+    shipping_neighborhood: Optional[str] = None
     shipping_city: Optional[str] = None
     shipping_state: Optional[str] = None
     shipping_zip_code: Optional[str] = None
@@ -104,6 +117,7 @@ class OrderResponse(BaseModel):
 
     iterations: List[IterationResponse] = Field(default_factory=list)
     approved_iteration: Optional[IterationResponse] = None
+    reference_images: List[OrderReferenceImageResponse] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

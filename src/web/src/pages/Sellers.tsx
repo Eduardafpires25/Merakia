@@ -1,4 +1,4 @@
-import { Loader2, Search, Store } from "lucide-react";
+import { Loader2, Search, Star, Store } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
@@ -70,7 +70,18 @@ export function SellersPage() {
               </div>
               <div className="min-w-0">
                 <h3 className="font-semibold truncate">{s.store_name}</h3>
-                <p className="text-xs text-brand-500">{formatCategory(s.category)}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-xs text-brand-500">{formatCategory(s.category)}</p>
+                  <span className="text-slate-300 dark:text-ink-600">•</span>
+                  <div className="flex items-center gap-1 text-xs text-amber-500 font-semibold">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    <span>{s.average_rating ? s.average_rating.toFixed(1) : "Novo"}</span>
+                    <span className="text-slate-400 font-normal">
+                      ({s.total_reviews ?? 0})
+                    </span>
+                  </div>
+                </div>
+
                 {s.description && (
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
                     {s.description}

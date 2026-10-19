@@ -25,6 +25,9 @@ from src.api.models.cart import (
     CartCheckoutResponse,
 )
 from src.storage import image_service
+from src.api.services.pix_service import pix_service
+from src.api.repositories.payment_repository import PaymentRepository
+from src.database.models.payment import PaymentStatus
 from config.logger import logger
 from config.settings import settings
 
@@ -286,13 +289,6 @@ def checkout_cart(
             detail="Forneça pelo menos um seller_id para checkout.",
         )
     
-    # Em DEV_MODE, simula erro de pagamento para testar funcionalidade de ignore_errors
-    if settings.DEV_MODE and not body.ignore_errors:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Falha no processamento do pagamento (simulado - DEV_MODE). Marque 'Ignorar erros' para continuar.",
-        )
-    
     # Busca itens do carrinho para os sellers especificados
     items = repo.list_for_user(current_user.id)
     filtered_items = [item for item in items if item.seller_id in body.seller_ids]
@@ -311,24 +307,32 @@ def checkout_cart(
     order_ids_updated = []
     for item in filtered_items:
         if item.order_id:
-            # É um pedido personalizado aprovado - muda status para PAID
+            # É um pedido personalizado aprovado - atualiza endereço e mantém APPROVED aguardando pagamento
             try:
                 order = order_repo.get_by_id(item.order_id)
-                if order and order.status == OrderStatus.APPROVED:
-                    order_repo.change_status(order, OrderStatus.PAID, changed_by_id=current_user.id, note="Pagamento realizado via carrinho")
+                if order and order.status in (OrderStatus.APPROVED, OrderStatus.DRAFT):
+                    order_repo.update(
+                        order,
+                        shipping_address=body.shipping_address,
+                        shipping_number=body.shipping_number,
+                        shipping_complement=body.shipping_complement,
+                        shipping_neighborhood=body.shipping_neighborhood,
+                        shipping_city=body.shipping_city,
+                        shipping_state=body.shipping_state,
+                        shipping_zip_code=body.shipping_zip_code,
+                        shipping_phone=body.shipping_phone,
+                    )
                     order_ids_updated.append(str(item.order_id))
-                    logger.info(f"Pedido {item.order_id} mudou de status para PAID após checkout")
+                    logger.info(f"Pedido {item.order_id} preparado para pagamento (aguardando confirmação PIX)")
             except Exception as e:
                 if body.ignore_errors and settings.DEV_MODE:
-                    # Em dev mode com ignore_errors=True, ignora erros e continua como se tivesse sucesso
                     logger.warning(f"DEV_MODE (ignore_errors=True): Erro ignorado no checkout do pedido {item.order_id}: {e}")
                     order_ids_updated.append(str(item.order_id))
                 else:
                     raise
         elif item.product_spec_id:
-            # É um produto regular - cria novo pedido
+            # É um produto regular - cria novo pedido em status APPROVED (aguardando pagamento)
             try:
-                # Converte selected_options de string para dict se existir
                 product_options = {}
                 if item.selected_options:
                     try:
@@ -337,7 +341,7 @@ def checkout_cart(
                     except json.JSONDecodeError:
                         product_options = {}
                 
-                # Cria novo pedido em status PAID
+                # Cria novo pedido
                 new_order = order_repo.create(
                     client_id=current_user.id,
                     seller_id=item.seller_id,
@@ -349,37 +353,76 @@ def checkout_cart(
                     shipping_address=body.shipping_address,
                     shipping_number=body.shipping_number,
                     shipping_complement=body.shipping_complement,
+                    shipping_neighborhood=body.shipping_neighborhood,
                     shipping_city=body.shipping_city,
                     shipping_state=body.shipping_state,
                     shipping_zip_code=body.shipping_zip_code,
                     shipping_phone=body.shipping_phone,
                     image_url=item.image_url,
                 )
-                # Muda status para PAID
-                order_repo.change_status(new_order, OrderStatus.PAID, changed_by_id=current_user.id, note="Pagamento realizado via carrinho (produto regular)")
+                order_repo.update(new_order, estimated_price=item.total_price)
+                order_repo.change_status(new_order, OrderStatus.APPROVED, changed_by_id=current_user.id, note="Pedido criado via carrinho (aguardando pagamento)")
                 order_ids_updated.append(str(new_order.id))
-                logger.info(f"Novo pedido {new_order.id} criado para produto regular {item.product_spec_id} e status PAID")
+                logger.info(f"Novo pedido {new_order.id} criado para produto regular {item.product_spec_id} em APPROVED")
             except Exception as e:
                 if body.ignore_errors and settings.DEV_MODE:
-                    # Em dev mode com ignore_errors=True, ignora erros e continua
                     logger.warning(f"DEV_MODE (ignore_errors=True): Erro ignorado ao criar pedido para produto {item.product_spec_id}: {e}")
                 else:
                     raise
+
     
     # Remove os itens do carrinho após checkout
     for item in filtered_items:
         repo.delete(item)
-    
-    logger.info(
-        "Checkout concluído para user=%s sellers=%s total=%s orders_updated=%s",
-        current_user.id,
-        body.seller_ids,
-        total_amount,
-        order_ids_updated,
+
+    # Geração didática de cobrança PIX para plataforma intermediária (MeraKia)
+    payment_repo = PaymentRepository(db)
+    primary_order_id = uuid.UUID(order_ids_updated[0]) if order_ids_updated else None
+    txid = f"MK{uuid.uuid4().hex[:16].upper()}"
+    pix_code = pix_service.generate_pix_payload(
+        amount=total_amount,
+        txid=txid,
+        description=f"Pedido MeraKia {order_ids_updated[0] if order_ids_updated else ''}",
     )
-    
+    pix_qr = pix_service.generate_qr_code_url(pix_code)
+
+    payment = payment_repo.create(
+        user_id=current_user.id,
+        seller_id=filtered_items[0].seller_id,
+        amount=total_amount,
+        pix_code=pix_code,
+        pix_qr_code=pix_qr,
+        order_id=primary_order_id,
+        status=PaymentStatus.PENDING,
+    )
+
+    # Salvar endereço no perfil do usuário se solicitado
+    if getattr(body, "save_address_to_profile", True):
+        try:
+            from src.api.repositories.auth_repository import UserRepository
+            user_repo = UserRepository(db)
+            user_repo.update(
+                current_user,
+                zip_code=body.shipping_zip_code,
+                address=body.shipping_address,
+                number=body.shipping_number,
+                complement=body.shipping_complement,
+                neighborhood=body.shipping_neighborhood,
+                city=body.shipping_city,
+                state=body.shipping_state,
+                phone=body.shipping_phone,
+            )
+            logger.info("Endereço salvo no perfil do usuário: %s", current_user.email)
+        except Exception as e:
+            logger.warning("Falha ao salvar endereço no perfil do usuário: %s", e)
+
     return CartCheckoutResponse(
-        order_ids=order_ids_updated,
+
+        order_ids=[uuid.UUID(oid) for oid in order_ids_updated],
         total_amount=total_amount,
-        message="Checkout realizado com sucesso. Pedidos atualizados para status PAGO.",
+        message="Checkout realizado com sucesso! Cobrança PIX gerada pela plataforma MeraKia.",
+        payment_id=payment.id,
+        pix_code=payment.pix_code,
+        pix_qr_code=payment.pix_qr_code,
+        payment_status=payment.status.value,
     )

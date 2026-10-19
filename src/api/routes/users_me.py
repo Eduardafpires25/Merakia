@@ -24,6 +24,14 @@ class AvatarResponse(BaseModel):
 class UserUpdate(BaseModel):
     name: str | None = None
     email: str | None = None
+    phone: str | None = None
+    zip_code: str | None = None
+    address: str | None = None
+    number: str | None = None
+    complement: str | None = None
+    neighborhood: str | None = None
+    city: str | None = None
+    state: str | None = None
 
 
 class IterationsLimitResponse(BaseModel):
@@ -49,7 +57,7 @@ def update_profile(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Atualiza o perfil do usuario logado (nome, email)."""
+    """Atualiza o perfil do usuario logado (nome, email, telefone, endereco)."""
     user_repo = UserRepository(db)
     update_data = body.model_dump(exclude_unset=True)
     if not update_data:
@@ -79,9 +87,17 @@ def update_profile(
         email_verified=updated.email_verified,
         avatar_key=updated.avatar_key,
         avatar_url=avatar_url,
+        zip_code=updated.zip_code,
+        address=updated.address,
+        number=updated.number,
+        complement=updated.complement,
+        neighborhood=updated.neighborhood,
+        city=updated.city,
+        state=updated.state,
         created_at=updated.created_at,
         iterations_remaining=limit_data["remaining"],
     )
+
 
 
 @router.post("/avatar", response_model=AvatarResponse)

@@ -1,6 +1,6 @@
 import pytest
 import json
-from uuid import uuid4
+from uuid import UUID, uuid4
 from decimal import Decimal
 from fastapi.testclient import TestClient
 from fastapi import status
@@ -579,6 +579,7 @@ class TestCartRoutes:
             json={
                 "seller_ids": [str(seller.user_id)],
                 "shipping_address": "Rua Teste",
+                "shipping_neighborhood": "Bairro Nobre",
                 "shipping_city": "Cidade",
                 "shipping_state": "UF",
                 "shipping_zip_code": "12345",
@@ -589,3 +590,7 @@ class TestCartRoutes:
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert len(data["order_ids"]) >= 1
+
+        created_order = db_session.query(Order).filter(Order.id == UUID(data["order_ids"][0])).first()
+        assert created_order is not None
+        assert created_order.shipping_neighborhood == "Bairro Nobre"
