@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str
     
     # Directories
-    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(_file_)))
+    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     LOG_DIR: str = os.path.join(BASE_DIR, "logs", "api")
     CACHE_DIR: str = os.path.join(BASE_DIR, "cache")
     IMAGES_DIR: str = os.path.join(CACHE_DIR, "images")
